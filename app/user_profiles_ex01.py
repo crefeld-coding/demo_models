@@ -19,9 +19,11 @@ def save_profiles():
 
 def user_dict_from_model(person):
 	messages = dict()
+	message_ids = dict()
 	for message in person.messages.all():
 		messages[message.timestamp.isoformat()] = message.body
-	return {'color': person.color, 'messages': messages}
+		message_ids[message.timestamp.isoformat()] = message.id
+	return {'color': person.color, 'messages': messages, 'person_id': person.id, 'message_ids': message_ids}
 
 @app.before_request
 def before_request():
