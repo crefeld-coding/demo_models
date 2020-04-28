@@ -1,5 +1,5 @@
 from flask import Flask, request, render_template, abort, redirect, url_for
-from app.models import Person
+from app.models import Person, Message
 from app import db
 import json
 import datetime
@@ -19,6 +19,11 @@ def save_profiles():
 		p.username = user
 		p.color = user_profiles[user]['color']
 		db.session.add(p)
+		for m_time in user_profiles[user]['messages'].keys():
+			m = Message.query.get(user_profiles[user]['message_ids'][m_time])
+			m.timestamp = datetime.datetime.strptime(m_time, "%Y-%m-%dT%H:%M:%S.%f")
+			m.body = user_profiles[user]['messages'][m_time]
+			db.session.add(m)
 	db.session.commit()
 
 def user_dict_from_model(person):
