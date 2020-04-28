@@ -14,8 +14,12 @@ def load_json():
 		user_profiles[p.username] = profile
 
 def save_profiles():
-	with open('user_profiles_ex01.json', 'w') as f:
-		json.dump(user_profiles, f, indent=2)
+	for user in user_profiles.keys():
+		p = Person.query.get(user_profiles[user]['person_id'])
+		p.username = user
+		p.color = user_profiles[user]['color']
+		db.session.add(p)
+	db.session.commit()
 
 def user_dict_from_model(person):
 	messages = dict()
