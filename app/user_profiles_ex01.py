@@ -15,7 +15,10 @@ def load_json():
 
 def save_profiles():
 	for user in user_profiles.keys():
-		p = Person.query.get(user_profiles[user]['person_id'])
+		if 'person_id' in user_profiles[user]:
+			p = Person.query.get(user_profiles[user]['person_id'])
+		else:
+			p = Person()
 		p.username = user
 		p.color = user_profiles[user]['color']
 		db.session.add(p)
