@@ -63,14 +63,14 @@ def user_profile(username):
 def user_color(username):
 	try:
 		user = user_profiles[username]
-		try:
+		if user['color']:
 			if request.method == 'POST':
 				body = request.get_data(as_text=True)
 				user['color'] = body
 				user['mod_time'] = datetime.datetime.utcnow().isoformat()
 				save_profiles()
 			return user['color']
-		except KeyError:
+		else:
 			abort(404, f"User {username} does not have a favorite color")
 	except KeyError:
 		abort(404, f"User {username} not found")
