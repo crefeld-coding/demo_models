@@ -14,20 +14,20 @@ def load_json():
 		user_profiles[p.username] = profile
 
 def save_profiles():
-	for user in user_profiles.keys():
-		if 'person_id' in user_profiles[user]:
-			p = Person.query.get(user_profiles[user]['person_id'])
+	for user in user_profiles.items():
+		if 'person_id' in user[1]:
+			p = Person.query.get(user[1]['person_id'])
 		else:
 			p = Person()
-		p.username = user
-		if 'color' in user_profiles[user]:
-			p.color = user_profiles[user]['color']
+		p.username = user[0]
+		if 'color' in user[1]:
+			p.color = user[1]['color']
 		db.session.add(p)
-		if 'messages' in user_profiles[user]:
-			for m_time in user_profiles[user]['messages'].keys():
-				m = Message.query.get(user_profiles[user]['message_ids'][m_time])
+		if 'messages' in user[1]:
+			for m_time in user[1]['messages'].keys():
+				m = Message.query.get(user[1]['message_ids'][m_time])
 				m.timestamp = datetime.datetime.strptime(m_time, "%Y-%m-%dT%H:%M:%S.%f")
-				m.body = user_profiles[user]['messages'][m_time]
+				m.body = user[1]['messages'][m_time]
 				db.session.add(m)
 	db.session.commit()
 
