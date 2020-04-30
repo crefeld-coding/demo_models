@@ -20,13 +20,15 @@ def save_profiles():
 		else:
 			p = Person()
 		p.username = user
-		p.color = user_profiles[user]['color']
+		if 'color' in user_profiles[user]:
+			p.color = user_profiles[user]['color']
 		db.session.add(p)
-		for m_time in user_profiles[user]['messages'].keys():
-			m = Message.query.get(user_profiles[user]['message_ids'][m_time])
-			m.timestamp = datetime.datetime.strptime(m_time, "%Y-%m-%dT%H:%M:%S.%f")
-			m.body = user_profiles[user]['messages'][m_time]
-			db.session.add(m)
+		if 'messages' in user_profiles[user]:
+			for m_time in user_profiles[user]['messages'].keys():
+				m = Message.query.get(user_profiles[user]['message_ids'][m_time])
+				m.timestamp = datetime.datetime.strptime(m_time, "%Y-%m-%dT%H:%M:%S.%f")
+				m.body = user_profiles[user]['messages'][m_time]
+				db.session.add(m)
 	db.session.commit()
 
 def user_dict_from_model(person):
@@ -41,8 +43,11 @@ def user_dict_from_model(person):
 def before_request():
 	load_json()
 
-@app.route('/user')
+@app.route('/user', methods=['GET', 'POST'])
 def user_list():
+	if request.method == 'POST':
+		user_profiles[request.get_data(as_text=True)] = dict()
+		save_profiles()
 	template_context = dict(users=user_profiles, get_latest_message=get_latest_message)
 	return render_template('user_list_template.html', **template_context)
 
