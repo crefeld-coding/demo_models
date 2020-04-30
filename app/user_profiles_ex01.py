@@ -25,7 +25,12 @@ def save_profiles():
 		db.session.add(p)
 		if 'messages' in user[1]:
 			for m_time in user[1]['messages'].keys():
-				m = Message.query.get(user[1]['message_ids'][m_time])
+				if 'message_ids' not in user[1]:
+					user[1]['message_ids'] = dict()
+				if m_time in user[1]['message_ids']:
+					m = Message.query.get(user[1]['message_ids'][m_time])
+				else:
+					m = Message()
 				m.timestamp = datetime.datetime.strptime(m_time, "%Y-%m-%dT%H:%M:%S.%f")
 				m.body = user[1]['messages'][m_time]
 				db.session.add(m)
