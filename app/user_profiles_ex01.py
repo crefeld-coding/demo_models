@@ -24,9 +24,9 @@ def save_profiles():
 			p.color = user[1]['color']
 		db.session.add(p)
 		if 'messages' in user[1]:
-			for m_time in user[1]['messages'].keys():
-				if 'message_ids' not in user[1]:
+			if 'message_ids' not in user[1]:
 					user[1]['message_ids'] = dict()
+			for m_time in user[1]['messages'].keys():
 				if m_time in user[1]['message_ids']:
 					m = Message.query.get(user[1]['message_ids'][m_time])
 				else:
