@@ -109,11 +109,22 @@ def latest_message(username):
 @app.route('/user/<username>/messages/<timestamp>', methods=['GET', 'PUT'])
 def message(username, timestamp):
 	try:
+		ts = datetime.datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S.%f")
 		if request.method == 'PUT':
-			put_message(username, timestamp, request.get_data(as_text=True))
-		return f"<p>{user_profiles[username]['messages'][timestamp]}</p> <p>{timestamp}</p>"
-	except KeyError:
-		abort(404, f"Message not found")
+			m_id = put_message(username, ts, request.get_data(as_text=True))
+			m = Message.query.get(m_id)
+		else:
+			p = Person.query.get(user_profiles[username]['person_id'])
+			m_exists = False
+			for m in p.messages.all():
+				if m.timestamp == ts:
+					m_exists = True
+					break
+			if not m_exists:
+				abort(404, "Message not found")
+		return f"<p>{m.body}</p> <p>{m.timestamp}</p>"
+	except ValueError:
+		abort(400, f"Invalid timpstamp format")
 
 def get_latest_message(username):
 	return max(user_profiles[username]['messages'].keys())
@@ -126,13 +137,14 @@ def post_message(username, body):
 		user_profiles[username]['messages'] = {time: body}
 	save_profiles()
 
-def put_message(username, timestamp, body):
-	try:
-		datetime.datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S.%f").isoformat()
-	except ValueError:
-		abort(400, 'Invalid timestamp format')
-	user_profiles[username]['messages'][timestamp] = body
-	save_profiles()
+def put_message(username, ts, body):
+	m = Message()
+	m.timestamp = ts
+	m.body = body
+	m.person_id = user_profiles[username]['person_id']
+	db.session.add(m)
+	db.session.commit()
+	return m.id
 
 def add_user(username, color):
 	user = Person(username=username, color=color)
