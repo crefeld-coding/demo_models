@@ -114,7 +114,7 @@ def message(username, timestamp):
 			m_id = put_message(username, ts, request.get_data(as_text=True))
 			m = Message.query.get(m_id)
 		else:
-			p = Person.query.get(user_profiles[username]['person_id'])
+			p = Person.query.filter_by(username=username).one()
 			m_exists = False
 			for m in p.messages.all():
 				if m.timestamp == ts:
