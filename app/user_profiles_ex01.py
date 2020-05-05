@@ -26,7 +26,7 @@ def save_profiles():
 		db.session.add(p)
 		if 'messages' in profile:
 			if 'message_ids' not in profile:
-					profile['message_ids'] = dict()
+				profile['message_ids'] = dict()
 			for m_time in profile['messages'].keys():
 				if m_time in profile['message_ids']:
 					m = Message.query.get(profile['message_ids'][m_time])
