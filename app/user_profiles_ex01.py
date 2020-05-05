@@ -3,6 +3,7 @@ from app.models import Person, Message
 from app import db
 import json
 import datetime
+from sqlalchemy.orm.exc import NoResultFound
 
 from app import app
 
@@ -103,7 +104,7 @@ def user_messages(username):
 
 @app.route('/user/<username>/messages/latest')
 def latest_message(username):
-	timestamp = get_latest_message(username)
+	timestamp = get_latest_message(username).isoformat()
 	return redirect(url_for(f'message', username=username, timestamp=timestamp), code=301)
 
 @app.route('/user/<username>/messages/<timestamp>', methods=['GET', 'PUT'])
@@ -127,7 +128,18 @@ def message(username, timestamp):
 		abort(400, f"Invalid timpstamp format")
 
 def get_latest_message(username):
-	return max(user_profiles[username]['messages'].keys())
+	try:
+		p = Person.query.filter_by(username=username).one()
+	except NoResultFound:
+		abort(404, f"User {username} not found")
+	try:
+		maximum = p.messages.all()[0].timestamp
+		for m in p.messages.all():
+			if m.timestamp > maximum:
+				m = maximum
+		return maximum
+	except IndexError:
+		abort(404, f"User {username} has no messages")
 
 def post_message(username, body):
 	time = datetime.datetime.utcnow().isoformat()
