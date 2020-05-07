@@ -95,11 +95,18 @@ def color_mod_time(username):
 
 @app.route('/user/<username>/messages', methods=['GET', 'POST'])
 def user_messages(username):
-	if  request.method == 'POST':
-		post_message(username, request.get_data(as_text=True))
 	try:
-		return user_profiles[username]['messages']
-	except KeyError:
+		p = Person.query.filter_by(username=username).one()
+		if  request.method == 'POST':
+			post_message(p, request.get_data(as_text=True))
+	except NoResultFound:
+		abort(404, f"User {username} not found")
+	messages_dict = dict()
+	for m in p.messages.all():
+		messages_dict[m.timestamp.isoformat()] = m.body
+	if len(messages_dict) > 0:
+		return messages_dict
+	else:
 		abort(404, f"User {username} has no messages")
 
 @app.route('/user/<username>/messages/latest')
@@ -141,13 +148,14 @@ def get_latest_message(username):
 	except IndexError:
 		abort(404, f"User {username} has no messages")
 
-def post_message(username, body):
-	time = datetime.datetime.utcnow().isoformat()
-	try:
-		user_profiles[username]['messages'][time] = body
-	except KeyError:
-		user_profiles[username]['messages'] = {time: body}
-	save_profiles()
+def post_message(p, body):
+	ts = datetime.datetime.utcnow()
+	m = Message()
+	m.timestamp = ts
+	m.body = body
+	m.person_id = p.id
+	db.session.add(m)
+	db.session.commit()
 
 def put_message(username, ts, body):
 	m = Message()
