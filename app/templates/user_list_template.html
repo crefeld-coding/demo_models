@@ -17,24 +17,24 @@
 			</tr>
 		</thead>
 		<tbody>
-			{% for name, profile in users.items() %}
+			{% for p in users %}
 				<tr>
 					<td>
-						<a href="{{ url_for('user_profile', username=name) }}"/>{{ name }}</a>
+						<a href="{{ url_for('user_profile', username=p.username) }}"/>{{ p.username }}</a>
 					</td>
 					<td>
-						{{ profile['color'] }}
+						{{ p.color }}
 					</td>
 					<td>
-						{{ profile['mod_time'] if profile['mod_time'] else "---" }}
+						{{ p.mod_time if p.mod_time else "---" }}
 					</td>
-					{% if profile['messages'] %}
-						{% set message_time = get_latest_message(name) %}
+					{% if p.messages.all()|length > 0 %}
+						{% set message_time = get_latest_message(p.username) %}
 						<td>
 							{{ message_time }}
 						</td>
 						<td>
-							{{ profile['messages'][message_time] }}
+							{{ Message.query.filter_by(timestamp=message_time).one().body }}
 						</td>
 					{% else %}
 						<td>---</td>
@@ -45,7 +45,7 @@
 		</tbody>
 		<tfoot>
 			<tr>
-				<th>{{ users.keys()|length }} total users</th>
+				<th>{{ users|length }} total users</th>
 			</tr>
 		</tfoot>
 	</table>

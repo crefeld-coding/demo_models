@@ -55,7 +55,7 @@ def user_list():
 	if request.method == 'POST':
 		user_profiles[request.get_data(as_text=True)] = dict()
 		save_profiles()
-	template_context = dict(users=user_profiles, get_latest_message=get_latest_message)
+	template_context = dict(users=Person.query.all(), Message=Message, get_latest_message=get_latest_message)
 	return render_template('user_list_template.html', **template_context)
 
 @app.route('/user/<username>')
