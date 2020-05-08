@@ -6,28 +6,20 @@
 	</style>
 </head>
 <body>
-	<h2>Profile of {{ username }}</h2>
+	<h2>Profile of {{ user.username }}</h2>
 	<h3>Favorite Color:</h3>
-	<p>{{ user["color"] }}</p>
-	<h3>Favorite Things:</h3>
-	<ul>
-	{% for thing in user["things"] %}
-		<li>{{ thing }}</li>
-	{% endfor %}
-	</ul>
-	{% if user["messages"] %}
-		<table>
+	<p>{{ user.color }}</p>
+	<table>
+		<tr>
+			<th>Message Time</th>
+			<th>Message Text</th>
+		</tr>
+		{% for m in user.messages.all() %}
 			<tr>
-				<th>Message Time</th>
-				<th>Message Text</th>
+				<td>{{ m.timestamp }}</td>
+				<td>{{ m.body }}</td>
 			</tr>
-			{% for time, message in user["messages"].items() %}
-				<tr>
-					<td>{{ time }}</td>
-					<td>{{ message }}</td>
-				</tr>
-			{% endfor %}
-		</table>
-	{% endif %}
+		{% endfor %}
+	</table>
 	<a href="{{ url_for('user_list') }}">User List</a>
 </body>

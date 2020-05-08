@@ -61,9 +61,9 @@ def user_list():
 @app.route('/user/<username>')
 def user_profile(username):
 	try:
-		user = user_profiles[username]
-		return render_template('user_profile_template.html', username=username, user=user)
-	except KeyError:
+		p = Person.query.filter_by(username=username).one()
+		return render_template('user_profile_template.html', user=p)
+	except NoResultFound:
 		abort(404, f"User {username} not found")
 
 @app.route('/user/<username>/color', methods=['GET','POST'])
