@@ -53,8 +53,10 @@ def before_request():
 @app.route('/user', methods=['GET', 'POST'])
 def user_list():
 	if request.method == 'POST':
-		user_profiles[request.get_data(as_text=True)] = dict()
-		save_profiles()
+		p = Person()
+		p.username = request.get_data(as_text=True)
+		db.session.add(p)
+		db.session.commit()
 	template_context = dict(users=Person.query.all(), Message=Message, get_latest_message=get_latest_message)
 	return render_template('user_list_template.html', **template_context)
 
