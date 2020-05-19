@@ -82,12 +82,12 @@ def user_color(username):
 @app.route('/user/<username>/mod_time')
 def color_mod_time(username):
 	try:
-		user = user_profiles[username]
-		try:
-			return user['mod_time']
-		except KeyError:
+		p = Person.query.filter_by(username=username).one()
+		if p.mod_time:
+			return p.mod_time
+		else:
 			abort(404, f"User {username} does not have a mod_time")
-	except KeyError:
+	except NoResultFound:
 		abort(404, f"User {username} not found")
 
 @app.route('/user/<username>/messages', methods=['GET', 'POST'])
