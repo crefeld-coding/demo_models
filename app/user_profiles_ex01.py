@@ -71,17 +71,12 @@ def user_profile(username):
 @app.route('/user/<username>/color', methods=['GET','POST'])
 def user_color(username):
 	try:
-		user = user_profiles[username]
-		if user['color']:
-			if request.method == 'POST':
-				body = request.get_data(as_text=True)
-				user['color'] = body
-				user['mod_time'] = datetime.datetime.utcnow().isoformat()
-				save_profiles()
-			return user['color']
+		p = Person.query.filter_by(username=username).one()
+		if p.color:
+			return p.color
 		else:
 			abort(404, f"User {username} does not have a favorite color")
-	except KeyError:
+	except NoResultFound:
 		abort(404, f"User {username} not found")
 
 @app.route('/user/<username>/mod_time')
