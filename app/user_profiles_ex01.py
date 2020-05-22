@@ -72,6 +72,11 @@ def user_profile(username):
 def user_color(username):
 	try:
 		p = Person.query.filter_by(username=username).one()
+		if request.method=='POST':
+			body = request.get_data(as_text=True)
+			p.color = body
+			db.session.add(p)
+			db.session.commit()
 		if p.color:
 			return p.color
 		else:
