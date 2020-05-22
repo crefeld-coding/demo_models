@@ -155,10 +155,10 @@ def post_message(p, body):
 	db.session.commit()
 
 def put_message(username, ts, body):
-	m = Message()
+	m = Message.query.filter_by(timestamp=ts).one()
 	m.timestamp = ts
 	m.body = body
-	m.person_id = user_profiles[username]['person_id']
+	m.person_id = Person.query.filter_by(username=username).one().id
 	db.session.add(m)
 	db.session.commit()
 	return m.id
