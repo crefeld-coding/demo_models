@@ -46,10 +46,6 @@ def user_dict_from_model(person):
 		message_ids[message.timestamp.isoformat()] = message.id
 	return {'color': person.color, 'messages': messages, 'person_id': person.id, 'message_ids': message_ids}
 
-@app.before_request
-def before_request():
-	load_json()
-
 @app.route('/user', methods=['GET', 'POST'])
 def user_list():
 	if request.method == 'POST':
