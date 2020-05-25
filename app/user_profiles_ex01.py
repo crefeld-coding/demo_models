@@ -7,30 +7,6 @@ from sqlalchemy.orm.exc import NoResultFound
 
 from app import app
 
-def save_profiles():
-	for user in user_profiles.items():
-		(username, profile) = user
-		if 'person_id' in profile:
-			p = Person.query.get(profile['person_id'])
-		else:
-			p = Person()
-		p.username = username
-		if 'color' in profile:
-			p.color = profile['color']
-		db.session.add(p)
-		if 'messages' in profile:
-			if 'message_ids' not in profile:
-				profile['message_ids'] = dict()
-			for m_time in profile['messages'].keys():
-				if m_time in profile['message_ids']:
-					m = Message.query.get(profile['message_ids'][m_time])
-				else:
-					m = Message()
-				m.timestamp = datetime.datetime.strptime(m_time, "%Y-%m-%dT%H:%M:%S.%f")
-				m.body = profile['messages'][m_time]
-				db.session.add(m)
-	db.session.commit()
-
 @app.route('/user', methods=['GET', 'POST'])
 def user_list():
 	if request.method == 'POST':
