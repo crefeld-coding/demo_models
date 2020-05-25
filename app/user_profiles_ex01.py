@@ -7,13 +7,6 @@ from sqlalchemy.orm.exc import NoResultFound
 
 from app import app
 
-def load_json():
-	global user_profiles
-	user_profiles = dict()
-	for p in Person.query.all():
-		profile = user_dict_from_model(p)
-		user_profiles[p.username] = profile
-
 def save_profiles():
 	for user in user_profiles.items():
 		(username, profile) = user
@@ -37,14 +30,6 @@ def save_profiles():
 				m.body = profile['messages'][m_time]
 				db.session.add(m)
 	db.session.commit()
-
-def user_dict_from_model(person):
-	messages = dict()
-	message_ids = dict()
-	for message in person.messages.all():
-		messages[message.timestamp.isoformat()] = message.body
-		message_ids[message.timestamp.isoformat()] = message.id
-	return {'color': person.color, 'messages': messages, 'person_id': person.id, 'message_ids': message_ids}
 
 @app.route('/user', methods=['GET', 'POST'])
 def user_list():
