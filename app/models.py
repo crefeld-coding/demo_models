@@ -1,5 +1,5 @@
 from datetime import datetime
-from app import db
+from app import db, login
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -30,3 +30,7 @@ class Message(db.Model):
 
     def __repr__(self):
         return '<Message {}>'.format(self.body)
+
+@login.user_loader
+def load_user(id):
+    return Person.query.get(int(id))
