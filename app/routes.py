@@ -21,7 +21,7 @@ def login():
         user = Person.query.filter_by(username=form.username.data).first()
         if user is None or not user.check_password(form.password.data):
             flash('Invalid username or password')
-            return redirect(url_for('login'))
+            return redirect(url_for('login'), code=302)
         login_user(user, remember=form.remember_me.data)
-        return redirect(url_for('index'))
+        return redirect(url_for('index'), code=302)
     return render_template('login.html', title='Sign In', form=form)
