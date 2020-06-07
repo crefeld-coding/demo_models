@@ -1,5 +1,5 @@
 from flask import render_template, flash, redirect, url_for
-from flask_login import current_user, login_user, logout_user
+from flask_login import current_user, login_user, logout_user, login_required
 from app import app
 from app.forms import LoginForm
 from app.models import Person, Message
@@ -7,6 +7,7 @@ from app.models import Person, Message
 
 @app.route('/')
 @app.route('/index')
+@login_required
 def index():
     posts = Message.query.all()
     return render_template('index.html', title='Home', posts=posts)
