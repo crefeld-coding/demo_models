@@ -10,7 +10,7 @@ from app.models import Person, Message
 @login_required
 def index():
     posts = Message.query.all()
-    return render_template('index.html', title='Home', posts=posts)
+    return render_template('index.html', title='Home', posts=posts, user=current_user)
 
 
 @app.route('/login', methods=['GET', 'POST'])
