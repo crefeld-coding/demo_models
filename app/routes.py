@@ -1,8 +1,9 @@
 from flask import render_template, flash, redirect, url_for
 from flask_login import current_user, login_user, logout_user, login_required
-from app import app
-from app.forms import LoginForm
+from app import app, db
+from app.forms import LoginForm, MessageForm
 from app.models import Person, Message
+import datetime
 
 
 @app.route('/')
@@ -31,3 +32,16 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('index'), code=302)
+
+@app.route('/create', methods=['GET', 'POST'])
+def create_message():
+    if not current_user.is_authenticated:
+        return redirect(url_for('login'))
+    form = MessageForm()
+    if form.validate_on_submit():
+        timestamp = datetime.datetime.utcnow()
+        m = Message(body=form.body.data, timestamp=timestamp, author=current_user)
+        db.session.add(m)
+        db.session.commit()
+        return redirect(url_for('index'))
+    return render_template('create_message.html', title='Post a Message', form=form)
