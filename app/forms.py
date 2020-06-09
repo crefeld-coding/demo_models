@@ -9,5 +9,5 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Sign In')
 
 class MessageForm(FlaskForm):
-	body = StringField('Message Body' validators=[DataRequired()])
+	body = StringField('Message Body', validators=[DataRequired()])
 	submit = SubmitField('Post Message')
