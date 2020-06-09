@@ -38,9 +38,8 @@ def logout():
     return redirect(url_for('index'), code=302)
 
 @app.route('/create', methods=['GET', 'POST'])
+@login_required
 def create_message():
-    if not current_user.is_authenticated:
-        return redirect(url_for('login'))
     form = MessageForm()
     if form.validate_on_submit():
         timestamp = datetime.datetime.utcnow()
